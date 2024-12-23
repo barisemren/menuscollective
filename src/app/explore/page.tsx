@@ -14,7 +14,7 @@ export default async function ExplorePage({
     // if search is matched in the name or category
     query = query.or(`name.ilike.%${search}%,category.ilike.%${search}%`);
   }
-  const { data: restaurants, error } = await query;
+  const { data: restaurants } = await query;
   console.log(restaurants);
 
   return (

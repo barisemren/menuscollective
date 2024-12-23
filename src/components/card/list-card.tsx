@@ -21,7 +21,7 @@ type Menu = {
 
 export default async function ListCard({ restaurant }: Props) {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from("menus")
     .select("*")
     .eq("id", restaurant.menu_id);
