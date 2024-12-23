@@ -9,7 +9,6 @@ export function SearchInput({ initialSearch = "" }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
-  console.log(isPending);
 
   const handleSearch = useDebounce((term: string) => {
     const params = new URLSearchParams(searchParams);
