@@ -1,3 +1,4 @@
+import Footer from "@/components/footer";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
@@ -26,9 +27,10 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} font-mono antialiased max-lg:mb-12`}
+        className={`${geistSans.variable} ${geistMono.variable} font-mono antialiased max-lg:mb-12 min-h-screen flex flex-col`}
       >
-        <main>{children}</main>
+        <main className="flex-1">{children}</main>
+        <Footer />
       </body>
     </html>
   );
