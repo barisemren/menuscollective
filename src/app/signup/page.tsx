@@ -2,7 +2,7 @@ import { createClient } from "@/utils/supabase/server";
 import { Utensils } from "lucide-react";
 import { redirect } from "next/navigation";
 
-import { LoginForm } from "@/components/login-form";
+import { SignUpForm } from "@/components/signup-form";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -29,7 +29,7 @@ export default async function LoginPage() {
         </div>
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">
-            <LoginForm />
+            <SignUpForm />
           </div>
         </div>
       </div>

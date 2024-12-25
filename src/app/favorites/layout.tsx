@@ -3,10 +3,10 @@ import AuthWrapper from "@/wrappers/auth-wrapper";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Explore | MenusCollective",
+  title: "Favorites | MenusCollective",
   description: "Collection of online menus from around the world",
 };
-export default function DashboardLayout({
+export default function FavoritesLayout({
   children,
 }: {
   children: React.ReactNode;

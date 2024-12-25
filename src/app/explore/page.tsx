@@ -1,7 +1,38 @@
-import { Suspense } from "react";
-import { createClient } from "@/utils/supabase/server";
-import { SearchInput } from "@/components/search-input";
 import ListCard from "@/components/card/list-card";
+import { SearchInput } from "@/components/search-input";
+import { Skeleton } from "@/components/ui/skeleton";
+import { createClient } from "@/utils/supabase/server";
+import { Suspense } from "react";
+
+function ListCardSkeleton() {
+  return (
+    <div className="flex flex-col space-y-2 border p-4 rounded-md">
+      <div className="inline-flex w-full justify-between group">
+        <Skeleton className="h-8 w-48" /> {/* Restaurant name */}
+        <Skeleton className="h-6 w-6" /> {/* Arrow icon */}
+      </div>
+      <div className="flex flex-col space-y-2">
+        <Skeleton className="h-4 w-32" /> {/* Category */}
+        <Skeleton className="h-4 w-24" /> {/* Cuisine */}
+        <div className="inline-flex w-full justify-between">
+          <Skeleton className="h-4 w-32" /> {/* Google Maps link */}
+          <Skeleton className="h-4 w-24" /> {/* Menu link */}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function LoadingSkeleton() {
+  return (
+    <div className="flex flex-col space-y-8 mt-10">
+      {Array.from({ length: 3 }).map((_, i) => (
+        <ListCardSkeleton key={i} />
+      ))}
+    </div>
+  );
+}
+
 export default async function ExplorePage(props: {
   searchParams: Promise<{ search?: string }>;
 }) {
@@ -15,12 +46,12 @@ export default async function ExplorePage(props: {
   const { data: restaurants } = await query;
 
   return (
-    <div className="w-2/5">
+    <div className="w-full lg:w-2/5">
       <div className="flex flex-col space-y-6 items-center">
         <p>Search for restaurants by name or category.</p>
         <SearchInput />
       </div>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<LoadingSkeleton />}>
         <div className="flex flex-col space-y-8 mt-10">
           {restaurants?.map((restaurant) => (
             <ListCard key={restaurant.id} restaurant={restaurant} />

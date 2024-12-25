@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import NavigationBar from "@/components/navigation-bar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -19,7 +18,7 @@ export const metadata: Metadata = {
   description: "Collection of online menus from around the world",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -27,12 +26,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} font-mono antialiased px-6 py-10`}
+        className={`${geistSans.variable} ${geistMono.variable} font-mono antialiased max-lg:mb-12`}
       >
-        <main className="w-full flex items-center justify-center">
-          {children}
-        </main>
-        <NavigationBar />
+        <main>{children}</main>
       </body>
     </html>
   );
