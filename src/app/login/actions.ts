@@ -14,10 +14,22 @@ export async function login(formData: FormData) {
     password: formData.get("password") as string,
   };
 
-  const { error } = await supabase.auth.signInWithPassword(data);
+  const { data: signInData, error } = await supabase.auth.signInWithPassword(
+    data
+  );
+
+  if (error?.message === "Email not confirmed") {
+    redirect("/verify-email");
+  }
 
   if (error) {
     redirect("/error");
+  }
+
+  if (!signInData.user?.email_confirmed_at) {
+    // Sign out the user if they're not verified
+    await supabase.auth.signOut();
+    redirect("/verify-email");
   }
 
   revalidatePath("/", "layout");

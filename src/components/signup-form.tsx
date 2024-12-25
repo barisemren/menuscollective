@@ -13,7 +13,8 @@ export function SignUpForm({
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Join MenusCollective!</h1>
         <p className="text-balance text-sm text-muted-foreground">
-          Enter your email below to create your account
+          Enter your email below to create your account. You'll need to verify
+          your email address before logging in.
         </p>
       </div>
       <div className="grid gap-6">
