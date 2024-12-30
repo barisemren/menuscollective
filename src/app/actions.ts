@@ -62,3 +62,99 @@ export async function addMenuRestaurant(formData: FormData) {
     return;
   }
 }
+
+export async function toggleFavorite(restaurantId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "Not authenticated" };
+  }
+
+  // Check if restaurant is already favorited
+  const { data: existingFavorite } = await supabase
+    .from("favorites")
+    .select()
+    .eq("user_id", user.id)
+    .eq("restaurant_id", parseInt(restaurantId))
+    .single();
+
+  if (existingFavorite) {
+    // Remove from favorites
+    const { error } = await supabase
+      .from("favorites")
+      .delete()
+      .eq("user_id", user.id)
+      .eq("restaurant_id", parseInt(restaurantId));
+
+    if (error) {
+      return { error: "Failed to remove from favorites" };
+    }
+    return { success: true, isFavorited: false };
+  } else {
+    // Add to favorites
+    const { error } = await supabase.from("favorites").insert({
+      user_id: user.id,
+      restaurant_id: parseInt(restaurantId),
+    });
+
+    // const { data: restaurant } = await supabase
+    //   .from("restaurants")
+    //   .select("fav_count")
+    //   .eq("id", parseInt(restaurantId))
+    //   .single();
+
+    // if (restaurant) {
+    //   const count = Number(restaurant.fav_count) + 1;
+    //   const { error: updateError, data: asd } = await supabase
+    //     .from("restaurants")
+    //     .update({ fav_count: count.toString() })
+    //     .eq("id", parseInt(restaurantId));
+
+    //   if (updateError) {
+    //     return { error: "Failed to add to favorites" };
+    //   }
+    // }
+
+    if (error) {
+      return { error: "Failed to add to favorites" };
+    }
+    return { success: true, isFavorited: true };
+  }
+}
+
+export async function getFavoriteStatuses(restaurantIds: number[]) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return {};
+  }
+
+  const { data: favorites } = await supabase
+    .from("favorites")
+    .select("restaurant_id")
+    .eq("user_id", user.id)
+    .in("restaurant_id", restaurantIds);
+
+  const favoriteMap: Record<number, boolean> = {};
+  restaurantIds.forEach((id) => {
+    favoriteMap[id] = false;
+  });
+
+  favorites?.forEach((favorite) => {
+    favoriteMap[favorite.restaurant_id] = true;
+  });
+
+  return favoriteMap;
+}
+
+// Keep this for backward compatibility and single restaurant checks
+export async function getFavoriteStatus(restaurantId: string) {
+  const statuses = await getFavoriteStatuses([parseInt(restaurantId)]);
+  return statuses[parseInt(restaurantId)] || false;
+}

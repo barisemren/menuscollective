@@ -1,4 +1,5 @@
-import ListCard from "@/components/card/list-card";
+import { getFavoriteStatuses } from "@/app/actions";
+import MenuCard from "@/components/card/menu-card";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -51,8 +52,27 @@ export default async function Home() {
 
   // Only fetch featured restaurants if user is authenticated
   const { data: featuredRestaurants } = user
-    ? await supabase.from("restaurants").select("*").limit(3)
+    ? await supabase
+        .from("menus")
+        .select(
+          `
+          id,
+          name,
+          description,
+          restaurant_name,
+          cuisine,
+          favorites:favorites(count)
+        `
+        )
+        .not("favorites", "is", null)
+        .order("favorites.count", { ascending: false })
+        .limit(3)
     : { data: null };
+
+  // Get favorite statuses for featured restaurants
+  const favoriteStatuses = featuredRestaurants
+    ? await getFavoriteStatuses(featuredRestaurants.map((r) => r.id))
+    : {};
 
   return (
     <div className="min-h-screen">
@@ -145,19 +165,23 @@ export default async function Home() {
       <div className="py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center mb-16">
-            <h2 className="text-3xl font-bold">Featured Restaurants</h2>
+            <h2 className="text-3xl font-bold">Most Popular Menus</h2>
             <p className="mt-4 text-mc-foreground/80">
               {user
-                ? "Check out some of our recently added restaurants"
-                : "Sign up to explore our collection of restaurant menus"}
+                ? "Discover the most loved menus in our community"
+                : "Sign up to explore our collection of popular menus"}
             </p>
           </div>
           <div className="mx-auto max-w-2xl">
             <Suspense fallback={<LoadingSkeleton />}>
               <div className="flex flex-col space-y-8">
                 {user && featuredRestaurants ? (
-                  featuredRestaurants.map((restaurant) => (
-                    <ListCard key={restaurant.id} restaurant={restaurant} />
+                  featuredRestaurants.map((menu) => (
+                    <MenuCard
+                      key={menu.id}
+                      menu={menu}
+                      initialFavorited={favoriteStatuses[menu.id] || false}
+                    />
                   ))
                 ) : (
                   <>

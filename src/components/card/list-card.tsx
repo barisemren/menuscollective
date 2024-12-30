@@ -1,25 +1,30 @@
-import React from "react";
-import Link from "next/link";
+import FavoriteButton from "@/components/favorite-button";
 import { createClient } from "@/utils/supabase/server";
 import { ArrowUpRight } from "lucide-react";
+import Link from "next/link";
+
 type Props = {
   restaurant: {
-    id: string;
+    id: number;
     name: string;
     category: string;
     cuisine: string;
     google_maps_link: string;
-    menu_id: string;
+    menu_id: number;
   };
+  initialFavorited: boolean;
 };
 
 type Menu = {
-  id: string;
-  restaurant_id: string;
+  id: number;
+  restaurant_id: number;
   link: string;
 };
 
-export default async function ListCard({ restaurant }: Props) {
+export default async function ListCard({
+  restaurant,
+  initialFavorited,
+}: Props) {
   const supabase = await createClient();
   const { data } = await supabase
     .from("menus")
@@ -31,9 +36,15 @@ export default async function ListCard({ restaurant }: Props) {
     <div className="flex flex-col space-y-2 border p-4 rounded-md">
       <div className="inline-flex w-full justify-between group">
         <h3 className="text-2xl font-bold">{restaurant.name}</h3>
-        <Link href={`/restaurant/${restaurant.id}`}>
-          <ArrowUpRight className="transition-all group-hover:text-mc-primary group-hover:scale-125" />
-        </Link>
+        <div className="flex items-center gap-2">
+          <FavoriteButton
+            restaurantId={restaurant.id.toString()}
+            initialFavorited={initialFavorited}
+          />
+          <Link href={`/restaurant/${restaurant.id}`}>
+            <ArrowUpRight className="transition-all group-hover:text-mc-primary group-hover:scale-125" />
+          </Link>
+        </div>
       </div>
       <div className="flex flex-col space-y-2">
         <p className="text-secondary">{restaurant.category}</p>
