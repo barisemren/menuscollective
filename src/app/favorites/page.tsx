@@ -12,16 +12,16 @@ type Restaurant = {
 
 type FavoriteWithRestaurant = {
   restaurant_id: number;
-  restaurants: Restaurant;
+  restaurantsnew: Restaurant;
 };
 
 export default async function FavoritesPage() {
   const supabase = await createClient();
 
   // Get user's favorites with restaurant details
-  const { data: favorites } = (await supabase.from("favorites").select(`
+  const { data: favorites } = (await supabase.from("favoritesnew").select(`
       restaurant_id,
-      restaurants (
+      restaurantsnew (
         id,
         name,
         category,
@@ -31,7 +31,7 @@ export default async function FavoritesPage() {
       )
     `)) as { data: FavoriteWithRestaurant[] | null };
 
-  const restaurants = favorites?.map((fav) => fav.restaurants) || [];
+  const restaurants = favorites?.map((fav) => fav.restaurantsnew) || [];
 
   return (
     <div className="w-full lg:w-2/5">
@@ -51,7 +51,7 @@ export default async function FavoritesPage() {
       <div className="flex flex-col space-y-8 mt-10">
         {restaurants.map((restaurant) => (
           <ListCard
-            key={restaurant.id}
+            key={restaurant?.id}
             restaurant={restaurant}
             initialFavorited={true}
           />

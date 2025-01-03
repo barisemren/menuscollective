@@ -40,7 +40,7 @@ export default async function ExplorePage(props: {
 }) {
   const { search } = await props.searchParams;
   const supabase = await createClient();
-  let query = supabase.from("restaurants").select("*");
+  let query = supabase.from("restaurantsnew").select("*");
   if (search) {
     // if search is matched in the name or category
     query = query.or(`name.ilike.%${search}%,category.ilike.%${search}%`);
@@ -53,16 +53,16 @@ export default async function ExplorePage(props: {
     : {};
 
   return (
-    <div className="w-full lg:w-2/5">
-      <div className="flex flex-col space-y-6 items-center">
-        <div className="flex items-center justify-between w-full max-w-sm">
+    <div className="w-full lg:w-2/3">
+      <div className="flex space-y-6 justify-between h-full">
+        <div className="flex flex-col space-y-4 w-full ">
           <p>Search for restaurants by name or category.</p>
-          <NewMenuSheet />
+          <SearchInput />
         </div>
-        <SearchInput />
+        <NewMenuSheet />
       </div>
       <Suspense fallback={<LoadingSkeleton />}>
-        <div className="flex flex-col space-y-8 mt-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-10">
           {restaurants?.map((restaurant) => (
             <ListCard
               key={restaurant.id}

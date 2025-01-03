@@ -53,7 +53,7 @@ export default async function Home() {
   // Only fetch featured restaurants if user is authenticated
   const { data: featuredRestaurants } = user
     ? await supabase
-        .from("menus")
+        .from("menusnew")
         .select(
           `
           id,

@@ -23,7 +23,7 @@ export async function addMenuRestaurant(formData: FormData) {
   };
 
   const { data: createdRestaurant, error: RestaurantError } = await supabase
-    .from("restaurants")
+    .from("restaurantsnew")
     .insert(restaurantData)
     .select()
     .single();
@@ -41,7 +41,7 @@ export async function addMenuRestaurant(formData: FormData) {
   };
 
   const { data: createdMenu, error: MenuError } = await supabase
-    .from("menus")
+    .from("menusnew")
     .insert(menuData)
     .select()
     .single();
@@ -53,7 +53,7 @@ export async function addMenuRestaurant(formData: FormData) {
 
   // Update restaurant with menu_id
   const { error: UpdateError } = await supabase
-    .from("restaurants")
+    .from("restaurantsnew")
     .update({ menu_id: createdMenu.id })
     .eq("id", createdRestaurant.id);
 
@@ -75,19 +75,19 @@ export async function toggleFavorite(restaurantId: string) {
 
   // Check if restaurant is already favorited
   const { data: existingFavorite } = await supabase
-    .from("favorites")
+    .from("favoritesnew")
     .select()
     .eq("user_id", user.id)
-    .eq("restaurant_id", parseInt(restaurantId))
+    .eq("restaurant_id", restaurantId)
     .single();
 
   if (existingFavorite) {
     // Remove from favorites
     const { error } = await supabase
-      .from("favorites")
+      .from("favoritesnew")
       .delete()
       .eq("user_id", user.id)
-      .eq("restaurant_id", parseInt(restaurantId));
+      .eq("restaurant_id", restaurantId);
 
     if (error) {
       return { error: "Failed to remove from favorites" };
@@ -95,13 +95,13 @@ export async function toggleFavorite(restaurantId: string) {
     return { success: true, isFavorited: false };
   } else {
     // Add to favorites
-    const { error } = await supabase.from("favorites").insert({
+    const { error } = await supabase.from("favoritesnew").insert({
       user_id: user.id,
-      restaurant_id: parseInt(restaurantId),
+      restaurant_id: restaurantId,
     });
 
     // const { data: restaurant } = await supabase
-    //   .from("restaurants")
+    //   .from("restaurantsnew")
     //   .select("fav_count")
     //   .eq("id", parseInt(restaurantId))
     //   .single();
@@ -109,7 +109,7 @@ export async function toggleFavorite(restaurantId: string) {
     // if (restaurant) {
     //   const count = Number(restaurant.fav_count) + 1;
     //   const { error: updateError, data: asd } = await supabase
-    //     .from("restaurants")
+    //     .from("restaurantsnew")
     //     .update({ fav_count: count.toString() })
     //     .eq("id", parseInt(restaurantId));
 
@@ -119,7 +119,7 @@ export async function toggleFavorite(restaurantId: string) {
     // }
 
     if (error) {
-      return { error: "Failed to add to favorites" };
+      return { error: error.message };
     }
     return { success: true, isFavorited: true };
   }
@@ -136,7 +136,7 @@ export async function getFavoriteStatuses(restaurantIds: number[]) {
   }
 
   const { data: favorites } = await supabase
-    .from("favorites")
+    .from("favoritesnew")
     .select("restaurant_id")
     .eq("user_id", user.id)
     .in("restaurant_id", restaurantIds);
