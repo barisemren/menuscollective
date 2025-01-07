@@ -8,6 +8,11 @@ type Restaurant = {
   cuisine: string;
   google_maps_link: string;
   menu_id: number;
+  menusnew: {
+    id: number;
+    restaurant_id: number;
+    link: string;
+  };
 };
 
 type FavoriteWithRestaurant = {
@@ -27,7 +32,12 @@ export default async function FavoritesPage() {
         category,
         cuisine,
         google_maps_link,
-        menu_id
+        menu_id,
+        menusnew (
+          id,
+          restaurant_id,
+          link
+        )
       )
     `)) as { data: FavoriteWithRestaurant[] | null };
 
