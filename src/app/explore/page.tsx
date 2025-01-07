@@ -40,7 +40,13 @@ export default async function ExplorePage(props: {
 }) {
   const { search } = await props.searchParams;
   const supabase = await createClient();
-  let query = supabase.from("restaurantsnew").select("*");
+  let query = supabase.from("restaurantsnew").select(`
+      *,
+      menusnew!restaurantsnew_menu_id_fkey (
+        id,
+        link
+      )
+    `);
   if (search) {
     // if search is matched in the name or category
     query = query.or(`name.ilike.%${search}%,category.ilike.%${search}%`);
@@ -51,7 +57,6 @@ export default async function ExplorePage(props: {
   const favoriteStatuses = restaurants
     ? await getFavoriteStatuses(restaurants.map((r) => r.id))
     : {};
-
   return (
     <div className="w-full lg:w-2/3">
       <div className="flex space-y-6 justify-between h-full">

@@ -1,5 +1,4 @@
 import FavoriteButton from "@/components/favorite-button";
-import { createClient } from "@/utils/supabase/server";
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 
@@ -11,6 +10,7 @@ type Props = {
     cuisine: string;
     google_maps_link: string;
     menu_id: number;
+    menusnew: Menu;
   };
   initialFavorited: boolean;
 };
@@ -25,12 +25,12 @@ export default async function ListCard({
   restaurant,
   initialFavorited,
 }: Props) {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("menusnew")
-    .select("*")
-    .eq("id", restaurant.menu_id);
-  const menu = data as Menu[];
+  // const supabase = await createClient();
+  // const { data } = await supabase
+  //   .from("menusnew")
+  //   .select("*")
+  //   .eq("id", restaurant.menu_id);
+  const menu = restaurant?.menusnew;
 
   return (
     <div className="flex flex-col space-y-2 border p-4 rounded-md h-full justify-between">
@@ -59,7 +59,7 @@ export default async function ListCard({
             View on Google Maps
           </a>
           <a
-            href={menu?.[0].link}
+            href={menu?.link}
             target="_blank"
             rel="noopener noreferrer"
             className="text-primary"
