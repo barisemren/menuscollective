@@ -1,5 +1,6 @@
 "use client";
-import { useRouter, usePathname } from "next/navigation";
+
+import { usePathname, useRouter } from "next/navigation";
 
 export default function NavigationBar() {
   const router = useRouter();

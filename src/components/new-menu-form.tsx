@@ -2,13 +2,23 @@
 
 import { addMenuRestaurant } from "@/app/actions";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { Loader2 } from "lucide-react";
+import { Loader2, QrCode } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
+import QrScanner from "./qr-scanner";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -36,6 +46,9 @@ export function NewMenuForm({
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [isQrDialogOpen, setIsQrDialogOpen] = useState(false);
+  const menuLinkInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -48,12 +61,30 @@ export function NewMenuForm({
     });
   }
 
+  const handleQrScanResult = (url: string) => {
+    if (menuLinkInputRef.current) {
+      menuLinkInputRef.current.value = url;
+    }
+    setIsQrDialogOpen(false);
+    toast({
+      title: "QR Code Scanned",
+      description: "Menu URL has been added to the form.",
+    });
+  };
+
+  const handleQrScanError = (error: string) => {
+    toast({
+      title: "Scan Error",
+      description: error,
+      variant: "destructive",
+    });
+  };
+
   return (
     <form
       onSubmit={handleSubmit}
       className={cn("flex flex-col gap-6", className)}
       {...props}
-      // aria-disabled={isPending}
     >
       <div className="grid gap-6">
         <div className="grid gap-2">
@@ -69,14 +100,46 @@ export function NewMenuForm({
         </div>
         <div className="grid gap-2">
           <Label htmlFor="link">Menu Link</Label>
-          <Input
-            id="link"
-            type="text"
-            name="link"
-            placeholder="https://example.com/menu"
-            required
-            disabled={isPending}
-          />
+          <div className="flex gap-2">
+            <Input
+              ref={menuLinkInputRef}
+              id="link"
+              type="text"
+              name="link"
+              placeholder="https://example.com/menu"
+              required
+              disabled={isPending}
+            />
+            <Dialog open={isQrDialogOpen} onOpenChange={setIsQrDialogOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="shrink-0"
+                  disabled={isPending}
+                >
+                  <QrCode className="h-4 w-4" />
+                  <span className="sr-only">Scan QR Code</span>
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Scan Menu QR Code</DialogTitle>
+                  <DialogDescription>
+                    Point your camera at a menu QR code to automatically fill
+                    the menu link.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="mt-4">
+                  <QrScanner
+                    onResult={handleQrScanResult}
+                    onError={handleQrScanError}
+                  />
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
         <div className="grid gap-2">
           <Label htmlFor="location">Google Maps Link</Label>
