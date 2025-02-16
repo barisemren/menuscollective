@@ -17,6 +17,18 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: "MenusCollective",
   description: "Collection of online menus from around the world",
+  manifest: "/manifest.json",
+  themeColor: "#000000",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "MenusCollective",
+  },
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+  },
 };
 
 export default async function RootLayout({
@@ -26,6 +38,12 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <script src="/register-sw.js" defer></script>
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-mono antialiased max-lg:mb-12 min-h-screen flex flex-col`}
       >
